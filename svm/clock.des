@@ -24,6 +24,10 @@ STATECHART:
             WAITING[DS]
             STARTALARM1
             STARTALARM2
+        ALARMTIMER[CS][DS]
+            RUNNING
+            WAITING[DS]
+
         CHRONO [CS][DS]
             INCREASE
             WAITING [DS]
@@ -261,6 +265,20 @@ TRANSITION:
     N: CLOCK.ALARM.STARTALARM1
     T: 0.1
     C: g.checkTime()
+    O: eventhandler.event("startAlarm")
+
+
+TRANSITION:
+    S: CLOCK.ALARMTIMER.WAITING
+    N: CLOCK.ALARMTIMER.RUNNING
+    E: startAlarm
+
+TRANSITION:
+    S: CLOCK.ALARMTIMER.RUNNING
+    N: CLOCK.ALARMTIMER.WAITING
+    T: 4.0
+    O: eventhandler.event("stopAlarm")
+       print "stopAlarm"
 
 TRANSITION:
     S: CLOCK.ALARM.STARTALARM1
@@ -309,6 +327,20 @@ TRANSITION:
     N: CLOCK.ALARM.WAITING
     E: lightOn
     O: g.unsetIndiglo()
+
+TRANSITION:
+    S: CLOCK.ALARM.STARTALARM2
+    N: CLOCK.ALARM.WAITING
+    E: stopAlarm
+    O: g.unsetIndiglo()
+
+TRANSITION:
+    S: CLOCK.ALARM.STARTALARM1
+    N: CLOCK.ALARM.WAITING
+    E: stopAlarm
+    O: g.unsetIndiglo()
+
+
 
 TRANSITION:
     S: CLOCK.ALARM.STARTALARM2
