@@ -1,0 +1,92 @@
+INITIALIZER:
+
+   from Tkinter import *
+   from DWatchGUI import DWatchGUI
+  
+   root = Tk()
+   root.title("A title")
+   
+   g = DWatchGUI(root, eventhandler)
+
+
+   eventhandler.start()
+   root.mainloop()   
+   exit()
+
+ENTER:
+
+
+
+
+STATECHART:
+    CLOCK [DS]
+        LIGHT [CS][DS]
+            LIGHTOFF[DS]
+            LIGHTON
+            LIGHTOFF2
+        TIME [CS][DS]
+            INCREASETIME [DS]
+            CHRONO
+                INIT [DS]
+                START
+
+TRANSITION:
+    S: CLOCK.LIGHT.LIGHTOFF
+    N: CLOCK.LIGHT.LIGHTON
+    E: lightOn
+    O: g.setIndiglo()
+       print "turn light on"
+
+TRANSITION:
+    S: CLOCK.LIGHT.LIGHTON
+    N: CLOCK.LIGHT.LIGHTOFF2
+    E: lightOff
+
+
+
+TRANSITION:
+    S: CLOCK.LIGHT.LIGHTOFF2
+    N: CLOCK.LIGHT.LIGHTOFF
+    T: 2
+    O: g.unsetIndiglo()
+
+TRANSITION:
+    S: CLOCK.TIME.INCREASETIME
+    N: CLOCK.TIME.INCREASETIME
+    T: 1
+    O: g.increaseTimeByOne()
+
+TRANSITION:
+    S: CLOCK.TIME.INCREASETIME
+    N: CLOCK.TIME.CHRONO.INIT
+    E: changeMode
+    O: g.refreshChronoDisplay()
+
+
+
+TRANSITION:
+    S: CLOCK.TIME.CHRONO.INIT
+    N: CLOCK.TIME.INCREASETIME
+    E: changeMode
+    O: g.refreshTimeDisplay()
+
+
+TRANSITION:
+    S: CLOCK.TIME.CHRONO.INIT
+    N: CLOCK.TIME.CHRONO.START
+    E: initChrono
+
+TRANSITION:
+    S: CLOCK.TIME.CHRONO.START
+    N: CLOCK.TIME.CHRONO.START
+    T: 1/4
+    O: g.increaseChronoByOne()
+       g.refreshChronoDisplay()
+
+TRANSITION:
+    S: CLOCK.TIME.CHRONO.START
+    N: CLOCK.TIME.CHRONO.INIT
+    E: resetChrono
+    O:  g.resetChrono()
+        g.refreshChronoDisplay()
+
