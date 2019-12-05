@@ -13,9 +13,6 @@ INITIALIZER:
    root.mainloop()   
    exit()
 
-MACRO:
-    pressed = 0
-    released = 0
 
 STATECHART:
     CLOCK [DS]
@@ -27,11 +24,103 @@ STATECHART:
             TIME [DS]
                 INCREASE [DS]
                 EDIT
+                    TIMERSTART
+                    TIMEREND
+                    EDIT
+                        INIT [DS]
+                        INCRAUTOMATICALLY
+                        START
+                        END
                 ALARM
+                     INIT [DS]
+                     EDIT
+                        INIT [DS]
+                        INCRAUTOMATICALLY
+                        START
+                        END
+                     START
+                     END
             CHRONO
-                INIT [DS]
+                INIT
                 START
+                PAUSE
 
+        ALARM[CS][DS]
+            WAITING[DS]
+            STARTALARM1
+            STARTALARM2
+
+################################
+# Alarm Transition - Task 6 - doesn't work
+TRANSITION:
+    S: CLOCK.ALARM.WAITING
+    N: CLOCK.ALARM.STARTALARM1
+    T: 0.1
+    C: g.checkTime()
+
+TRANSITION:
+    S: CLOCK.ALARM.STARTALARM1
+    N: CLOCK.ALARM.STARTALARM2
+    T: 0.5
+    O: g.setIndiglo()
+
+TRANSITION:
+    S: CLOCK.ALARM.STARTALARM2
+    N: CLOCK.ALARM.STARTALARM1
+    T: 0.5
+    O: g.unsetIndiglo()
+
+TRANSITION:
+    S: CLOCK.ALARM.STARTALARM2
+    N: CLOCK.ALARM.WAITING
+    E: onoff
+    O: g.unsetIndiglo()
+
+TRANSITION:
+    S: CLOCK.ALARM.STARTALARM1
+    N: CLOCK.ALARM.WAITING
+    E: onoff
+    O: g.unsetIndiglo()
+
+TRANSITION:
+    S: CLOCK.ALARM.STARTALARM2
+    N: CLOCK.ALARM.WAITING
+    E: released
+    O: g.unsetIndiglo()
+
+TRANSITION:
+    S: CLOCK.ALARM.STARTALARM1
+    N: CLOCK.ALARM.WAITING
+    E: released
+    O: g.unsetIndiglo()
+
+TRANSITION:
+    S: CLOCK.ALARM.STARTALARM2
+    N: CLOCK.ALARM.WAITING
+    E: lightOn
+    O: g.unsetIndiglo()
+
+TRANSITION:
+    S: CLOCK.ALARM.STARTALARM1
+    N: CLOCK.ALARM.WAITING
+    E: lightOn
+    O: g.unsetIndiglo()
+
+TRANSITION:
+    S: CLOCK.ALARM.STARTALARM2
+    N: CLOCK.ALARM.WAITING
+    E: changeMode
+    O: g.unsetIndiglo()
+
+TRANSITION:
+    S: CLOCK.ALARM.STARTALARM1
+    N: CLOCK.ALARM.WAITING
+    E: changeMode
+    O: g.unsetIndiglo()
+
+
+################################
+#Background Light - Task 2 Transitions
 TRANSITION:
     S: CLOCK.LIGHT.LIGHTOFF
     N: CLOCK.LIGHT.LIGHTON
@@ -44,20 +133,23 @@ TRANSITION:
     N: CLOCK.LIGHT.LIGHTOFF2
     E: lightOff
 
-
-
 TRANSITION:
     S: CLOCK.LIGHT.LIGHTOFF2
     N: CLOCK.LIGHT.LIGHTOFF
     T: 2
     O: g.unsetIndiglo()
 
+
+##################################
+# Increasing Time - Task 1 Transitions
 TRANSITION:
     S: CLOCK.MODE.TIME.INCREASE
     N: CLOCK.MODE.TIME.INCREASE
     T: 1
     O: g.increaseTimeByOne()
 
+###################################
+# Alternating mode - Task 3
 TRANSITION:
     S: CLOCK.MODE.TIME.INCREASE
     N: CLOCK.MODE.CHRONO.INIT
@@ -65,14 +157,31 @@ TRANSITION:
     O: g.refreshChronoDisplay()
 
 
-
 TRANSITION:
     S: CLOCK.MODE.CHRONO.INIT
     N: CLOCK.MODE.TIME.INCREASE
     E: changeMode
     O: g.refreshTimeDisplay()
+       print "change mode"
 
 
+TRANSITION:
+    S: CLOCK.MODE.CHRONO.START
+    N: CLOCK.MODE.TIME.INCREASE
+    E: changeMode
+    O: g.refreshTimeDisplay()
+       print "change mode"
+
+TRANSITION:
+    S: CLOCK.MODE.CHRONO.PAUSE
+    N: CLOCK.MODE.TIME.INCREASE
+    E: changeMode
+    O: g.refreshTimeDisplay()
+       print "change mode"
+
+
+######################################
+#Chrono - Task 4
 TRANSITION:
     S: CLOCK.MODE.CHRONO.INIT
     N: CLOCK.MODE.CHRONO.START
@@ -92,36 +201,194 @@ TRANSITION:
     O:  g.resetChrono()
         g.refreshChronoDisplay()
 
+TRANSITION:
+    S: CLOCK.MODE.CHRONO.PAUSE
+    N: CLOCK.MODE.CHRONO.INIT
+    E: resetChrono
+    O:  g.resetChrono()
+        g.refreshChronoDisplay()
 
 TRANSITION:
-    S: CLOCK.MODE.TIME.INCREASE
-    N: CLOCK.MODE.TIME.EDIT
-    E: editTime
+    S: CLOCK.MODE.CHRONO.START
+    N: CLOCK.MODE.CHRONO.PAUSE
+    E: initChrono
+    O: print "pause chrono"
+
 
 TRANSITION:
-    S: CLOCK.MODE.TIME.EDIT
-    N: CLOCK.MODE.TIME.EDIT
+    S: CLOCK.MODE.CHRONO.PAUSE
+    N: CLOCK.MODE.CHRONO.START
+    E: initChrono
+    O: print "resume chrono"
+
+########################################
+# Increase Selection Edit - Task 7
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.EDIT.EDIT.INIT
+    N: CLOCK.MODE.TIME.EDIT.EDIT.INCRAUTOMATICALLY
     E: increase
     O: g.increaseSelection()
 
 TRANSITION:
-    S: CLOCK.MODE.TIME.EDIT
-    N: CLOCK.MODE.TIME.EDIT
-    E: editTime
+    S: CLOCK.MODE.TIME.EDIT.EDIT.INCRAUTOMATICALLY
+    N: CLOCK.MODE.TIME.EDIT.EDIT.INCRAUTOMATICALLY
+    T: 0.3
+    O: g.increaseSelection()
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.EDIT.EDIT.INCRAUTOMATICALLY
+    N: CLOCK.MODE.TIME.EDIT.EDIT.INIT
+    E: stopInc
+
+##############################################
+#Quit after 5 seconds - EDIT - Task 7
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.EDIT.EDIT.INIT
+    N: CLOCK.MODE.TIME.INCREASE
+    T: 5
+    O: g.stopSelection()
+       print "no editing happened"
+
+##########################################
+#2 sec timer for exiting editing mode or select next digit - Task 7 -EDIT
+TRANSITION:
+    S: CLOCK.MODE.TIME.EDIT.EDIT.INIT
+    N: CLOCK.MODE.TIME.EDIT.EDIT.START
+    E: finishEdit
+    O: print "time is running"
+
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.EDIT.EDIT.END
+    N: CLOCK.MODE.TIME.INCREASE
+    E: released
+    O: g.stopSelection()
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.EDIT.EDIT.START
+    N: CLOCK.MODE.TIME.EDIT.EDIT.INIT
+    E: released
     O: g.selectNext()
+       print "next selection"
 
+TRANSITION:
+    S: CLOCK.MODE.TIME.EDIT.EDIT.START
+    N: CLOCK.MODE.TIME.EDIT.EDIT.END
+    T: 2
+    O: print "time is up"
 
-
-
-
+#############################################
+#After 1.5 seconds change to edit mode - Task 5
 TRANSITION:
     S: CLOCK.MODE.TIME.INCREASE
-    N: CLOCK.MODE.TIME.ALARM
-    E: setAlarm
-    O: g.refreshAlarmDisplay()
+    N: CLOCK.MODE.TIME.EDIT.TIMERSTART
+    E: editTime
+    O: print "start timer"
+
 
 TRANSITION:
-    S: CLOCK.MODE.TIME.ALARM
-    N: CLOCK.MODE.TIME.EDIT
-    E: editTime
+    S: CLOCK.MODE.TIME.EDIT.TIMEREND
+    N: CLOCK.MODE.TIME.EDIT.EDIT.INIT
+    E: released
     O: g.startSelection()
+       print "start selecting"
+
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.EDIT.TIMERSTART
+    N: CLOCK.MODE.TIME.INCREASE
+    E: released
+
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.EDIT.TIMERSTART
+    N: CLOCK.MODE.TIME.EDIT.TIMEREND
+    T: 1.5
+    O: print "time is up"
+###############################################
+# Task 6 - Alarm
+TRANSITION:
+    S: CLOCK.MODE.TIME.INCREASE
+    N: CLOCK.MODE.TIME.ALARM.START
+    E: setAlarm
+    O: print "time is running"
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.ALARM.END
+    N: CLOCK.MODE.TIME.ALARM.EDIT.INIT
+    E: onoff
+    O: g.refreshAlarmDisplay()
+       g.startSelection()
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.ALARM.START
+    N: CLOCK.MODE.TIME.INCREASE
+    E: onoff
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.ALARM.START
+    N: CLOCK.MODE.TIME.ALARM.END
+    T: 1.5
+    O: print "time is up"
+
+########################################
+# Increase Selection Edit - Task 7 - ALARM
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.ALARM.EDIT.INIT
+    N: CLOCK.MODE.TIME.ALARM.EDIT.INCRAUTOMATICALLY
+    E: increase
+    O: g.increaseSelection()
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.ALARM.EDIT.INCRAUTOMATICALLY
+    N: CLOCK.MODE.TIME.ALARM.EDIT.INCRAUTOMATICALLY
+    T: 0.3
+    O: g.increaseSelection()
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.ALARM.EDIT.INCRAUTOMATICALLY
+    N: CLOCK.MODE.TIME.ALARM.EDIT.INIT
+    E: stopInc
+
+##############################################
+#Quit after 5 seconds <- ALARM
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.ALARM.EDIT.INIT
+    N: CLOCK.MODE.TIME.INCREASE
+    T: 5
+    O: g.stopSelection()
+       g.setAlarm()
+       print "no editing happened"
+
+##########################################
+#2 sec timer for exiting editing mode or select next digit - Task 7 <- ALARM
+TRANSITION:
+    S: CLOCK.MODE.TIME.ALARM.EDIT.INIT
+    N: CLOCK.MODE.TIME.ALARM.EDIT.START
+    E: finishEdit
+    O: print "time is running"
+
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.ALARM.EDIT.END
+    N: CLOCK.MODE.TIME.INCREASE
+    E: released
+    O: g.stopSelection()
+       g.setAlarm()
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.ALARM.EDIT.START
+    N: CLOCK.MODE.TIME.ALARM.EDIT.INIT
+    E: released
+    O: g.selectNext()
+       print "next selection"
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.ALARM.EDIT.START
+    N: CLOCK.MODE.TIME.ALARM.EDIT.END
+    T: 2
+    O: print "time is up"
