@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b13b1ea8-f1bc-4947-aee1-e8dbb1fcadef" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../Task 3.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../Task 3.pdf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/simple.des" beforeDir="false" afterPath="$PROJECT_DIR$/simple.des" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -40,8 +39,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/simple.des">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="780">
-              <caret line="117" column="17" selection-start-line="117" selection-start-column="17" selection-end-line="117" selection-end-column="17" />
+            <state relative-caret-position="180">
+              <caret line="53" column="7" selection-start-line="53" selection-start-column="7" selection-end-line="53" selection-end-column="7" />
             </state>
           </provider>
         </entry>
@@ -176,8 +175,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/simple.des">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="780">
-          <caret line="117" column="17" selection-start-line="117" selection-start-column="17" selection-end-line="117" selection-end-column="17" />
+        <state relative-caret-position="180">
+          <caret line="53" column="7" selection-start-line="53" selection-start-column="7" selection-end-line="53" selection-end-column="7" />
         </state>
       </provider>
     </entry>

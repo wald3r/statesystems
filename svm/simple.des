@@ -51,7 +51,7 @@ STATECHART:
             STARTALARM2
 
 ################################
-# Alarm Transition - Task 6 - doesn't work
+# Alarm - Task 6
 TRANSITION:
     S: CLOCK.ALARM.WAITING
     N: CLOCK.ALARM.STARTALARM1
