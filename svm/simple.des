@@ -13,10 +13,9 @@ INITIALIZER:
    root.mainloop()   
    exit()
 
-ENTER:
-
-
-
+MACRO:
+    pressed = 0
+    released = 0
 
 STATECHART:
     CLOCK [DS]
@@ -24,8 +23,11 @@ STATECHART:
             LIGHTOFF[DS]
             LIGHTON
             LIGHTOFF2
-        TIME [CS][DS]
-            INCREASETIME [DS]
+        MODE [CS][DS]
+            TIME [DS]
+                INCREASE [DS]
+                EDIT
+                ALARM
             CHRONO
                 INIT [DS]
                 START
@@ -51,42 +53,75 @@ TRANSITION:
     O: g.unsetIndiglo()
 
 TRANSITION:
-    S: CLOCK.TIME.INCREASETIME
-    N: CLOCK.TIME.INCREASETIME
+    S: CLOCK.MODE.TIME.INCREASE
+    N: CLOCK.MODE.TIME.INCREASE
     T: 1
     O: g.increaseTimeByOne()
 
 TRANSITION:
-    S: CLOCK.TIME.INCREASETIME
-    N: CLOCK.TIME.CHRONO.INIT
+    S: CLOCK.MODE.TIME.INCREASE
+    N: CLOCK.MODE.CHRONO.INIT
     E: changeMode
     O: g.refreshChronoDisplay()
 
 
 
 TRANSITION:
-    S: CLOCK.TIME.CHRONO.INIT
-    N: CLOCK.TIME.INCREASETIME
+    S: CLOCK.MODE.CHRONO.INIT
+    N: CLOCK.MODE.TIME.INCREASE
     E: changeMode
     O: g.refreshTimeDisplay()
 
 
 TRANSITION:
-    S: CLOCK.TIME.CHRONO.INIT
-    N: CLOCK.TIME.CHRONO.START
+    S: CLOCK.MODE.CHRONO.INIT
+    N: CLOCK.MODE.CHRONO.START
     E: initChrono
 
 TRANSITION:
-    S: CLOCK.TIME.CHRONO.START
-    N: CLOCK.TIME.CHRONO.START
+    S: CLOCK.MODE.CHRONO.START
+    N: CLOCK.MODE.CHRONO.START
     T: 1/4
     O: g.increaseChronoByOne()
        g.refreshChronoDisplay()
 
 TRANSITION:
-    S: CLOCK.TIME.CHRONO.START
-    N: CLOCK.TIME.CHRONO.INIT
+    S: CLOCK.MODE.CHRONO.START
+    N: CLOCK.MODE.CHRONO.INIT
     E: resetChrono
     O:  g.resetChrono()
         g.refreshChronoDisplay()
 
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.INCREASE
+    N: CLOCK.MODE.TIME.EDIT
+    E: editTime
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.EDIT
+    N: CLOCK.MODE.TIME.EDIT
+    E: increase
+    O: g.increaseSelection()
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.EDIT
+    N: CLOCK.MODE.TIME.EDIT
+    E: editTime
+    O: g.selectNext()
+
+
+
+
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.INCREASE
+    N: CLOCK.MODE.TIME.ALARM
+    E: setAlarm
+    O: g.refreshAlarmDisplay()
+
+TRANSITION:
+    S: CLOCK.MODE.TIME.ALARM
+    N: CLOCK.MODE.TIME.EDIT
+    E: editTime
+    O: g.startSelection()
