@@ -32,7 +32,6 @@ STATECHART:
                         START
                         END
                 ALARM
-                     INIT [DS]
                      EDIT
                         INIT [DS]
                         INCRAUTOMATICALLY
@@ -61,14 +60,14 @@ TRANSITION:
 TRANSITION:
     S: CLOCK.ALARM.STARTALARM1
     N: CLOCK.ALARM.STARTALARM2
-    T: 0.5
+    T: 0.5 [OTT]
     O: g.setIndiglo()
 
 TRANSITION:
     S: CLOCK.ALARM.STARTALARM2
     N: CLOCK.ALARM.STARTALARM1
-    T: 0.5
-    O: g.unsetIndiglo()
+    T: 0.5 [OTT]
+    O: g.unsetIndiglo()cM
 
 TRANSITION:
     S: CLOCK.ALARM.STARTALARM2
@@ -138,6 +137,7 @@ TRANSITION:
     N: CLOCK.LIGHT.LIGHTOFF
     T: 2
     O: g.unsetIndiglo()
+       print "turn light off"
 
 
 ##################################
@@ -147,6 +147,7 @@ TRANSITION:
     N: CLOCK.MODE.TIME.INCREASE
     T: 1
     O: g.increaseTimeByOne()
+       g.refreshTimeDisplay()
 
 ###################################
 # Alternating mode - Task 3
@@ -186,6 +187,7 @@ TRANSITION:
     S: CLOCK.MODE.CHRONO.INIT
     N: CLOCK.MODE.CHRONO.START
     E: initChrono
+    O: print "start chrono"
 
 TRANSITION:
     S: CLOCK.MODE.CHRONO.START
@@ -200,6 +202,7 @@ TRANSITION:
     E: resetChrono
     O:  g.resetChrono()
         g.refreshChronoDisplay()
+        print "reset chrono"
 
 TRANSITION:
     S: CLOCK.MODE.CHRONO.PAUSE
@@ -207,6 +210,7 @@ TRANSITION:
     E: resetChrono
     O:  g.resetChrono()
         g.refreshChronoDisplay()
+        print "reset chrono"
 
 TRANSITION:
     S: CLOCK.MODE.CHRONO.START
@@ -249,7 +253,7 @@ TRANSITION:
     N: CLOCK.MODE.TIME.INCREASE
     T: 5
     O: g.stopSelection()
-       print "no editing happened"
+       print "stopped editing"
 
 ##########################################
 #2 sec timer for exiting editing mode or select next digit - Task 7 -EDIT
@@ -257,7 +261,7 @@ TRANSITION:
     S: CLOCK.MODE.TIME.EDIT.EDIT.INIT
     N: CLOCK.MODE.TIME.EDIT.EDIT.START
     E: finishEdit
-    O: print "time is running"
+    O: print "start timer"
 
 
 TRANSITION:
@@ -277,7 +281,7 @@ TRANSITION:
     S: CLOCK.MODE.TIME.EDIT.EDIT.START
     N: CLOCK.MODE.TIME.EDIT.EDIT.END
     T: 2
-    O: print "time is up"
+    O: print "end timer"
 
 #############################################
 #After 1.5 seconds change to edit mode - Task 5
@@ -306,14 +310,14 @@ TRANSITION:
     S: CLOCK.MODE.TIME.EDIT.TIMERSTART
     N: CLOCK.MODE.TIME.EDIT.TIMEREND
     T: 1.5
-    O: print "time is up"
+    O: print "end timer"
 ###############################################
 # Task 6 - Alarm
 TRANSITION:
     S: CLOCK.MODE.TIME.INCREASE
     N: CLOCK.MODE.TIME.ALARM.START
     E: setAlarm
-    O: print "time is running"
+    O: print "start timer"
 
 TRANSITION:
     S: CLOCK.MODE.TIME.ALARM.END
@@ -331,7 +335,7 @@ TRANSITION:
     S: CLOCK.MODE.TIME.ALARM.START
     N: CLOCK.MODE.TIME.ALARM.END
     T: 1.5
-    O: print "time is up"
+    O: print "end timer"
 
 ########################################
 # Increase Selection Edit - Task 7 - ALARM
@@ -362,7 +366,7 @@ TRANSITION:
     T: 5
     O: g.stopSelection()
        g.setAlarm()
-       print "no editing happened"
+       print "stopped editing"
 
 ##########################################
 #2 sec timer for exiting editing mode or select next digit - Task 7 <- ALARM
@@ -370,7 +374,7 @@ TRANSITION:
     S: CLOCK.MODE.TIME.ALARM.EDIT.INIT
     N: CLOCK.MODE.TIME.ALARM.EDIT.START
     E: finishEdit
-    O: print "time is running"
+    O: print "start timer"
 
 
 TRANSITION:
@@ -391,4 +395,4 @@ TRANSITION:
     S: CLOCK.MODE.TIME.ALARM.EDIT.START
     N: CLOCK.MODE.TIME.ALARM.EDIT.END
     T: 2
-    O: print "time is up"
+    O: print "end timer"
