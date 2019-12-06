@@ -147,7 +147,7 @@ TRANSITION:
     N: CLOCK.MODE.TIME.INCREASE
     T: 1
     O: g.increaseTimeByOne()
-       g.refreshTimeDisplay()
+
 
 ###################################
 # Alternating mode - Task 3
